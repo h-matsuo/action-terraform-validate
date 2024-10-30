@@ -1,0 +1,24 @@
+name: Using improved action
+
+on:
+  pull_request:
+
+jobs:
+  terraform_validate:
+    name: runner / terraform validate
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        root_module:
+          - development
+          - production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          github_token: ${{ secrets.github_token }}
+          workdir: ./terraform/${{ matrix.root_module }}
+          reporter: github-pr-review
+          level: warning
+          # Explicitly specify a unique name for each job to prevent reviewdog from overwriting comments across jobs.
+          name: terraform validate (${{ matrix.root_module }})
