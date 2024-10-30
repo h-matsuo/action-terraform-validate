@@ -1,0 +1,22 @@
+name: Using original action
+
+on:
+  pull_request:
+
+jobs:
+  terraform_validate:
+    name: runner / terraform validate
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        root_module:
+          - development
+          - production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: reviewdog/action-terraform-validate@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          workdir: ./terraform/${{ matrix.root_module }}
+          reporter: github-pr-review
+          level: warning
